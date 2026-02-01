@@ -1,4 +1,4 @@
-# minigrad++
+# CGrad
 
 A minimalistic educational implementation of automatic differentiation (backpropagation) written in pure C.
 
