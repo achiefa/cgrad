@@ -149,8 +149,6 @@ This library is designed for learning, not production use. It demonstrates:
 - Arena memory management patterns in C
 - Building computation graphs with function pointers
 
-For production autodiff, consider PyTorch, JAX, or TensorFlow.
-
 ## License
 
 GPL-3.0 - See [LICENSE](LICENSE) for details.
