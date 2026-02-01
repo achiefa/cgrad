@@ -28,6 +28,7 @@ int main(void) {
   value_set_name(L, "L");
 
   tape_print_stats(tape);
+  tape_graphviz(tape, "simple_graphviz");
   tape_destroy_instance();
   return 0;
 }

@@ -1,14 +1,14 @@
 #ifndef CGRAD_H
 #define CGRAD_H
 
-/* 
+/*
  * cgrad: A pure C implementation of automatic differentiation
  *
  * This library is a simple and educative implementation
  * of the tape-based backward automatic differentiation. Other
  * than simple arithmetic operations, it also implements neural
  * network components (MLP, layers, neurons)
- * 
+ *
  * Usage:
  *    #include "minigrad.h"
  *    // Create values
@@ -32,6 +32,5 @@
 
 #include "tape.h"
 #include "value.h"
-
 
 #endif // CGRAD_H

@@ -7,6 +7,7 @@ Memory pool for memory allocations of the computational graph.
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,37 +25,40 @@ typedef struct TapeBlock {
 } TapeBlock;
 
 typedef struct Tape {
-    TapeBlock** blocks;     // Array of block pointers
+    TapeBlock **blocks;     // Array of block pointers
     size_t num_blocks;      // Current count
-    size_t blocks_capacity;  // Allocated capacity
+    size_t blocks_capacity; // Allocated capacity
 
-    struct ValueData** nodes; // Array of node pointers
+    struct ValueData **nodes; // Array of node pointers
     size_t num_nodes;
     size_t nodes_capacity;
 } Tape;
 
 /* Tape lifecycle management */
-Tape* tape_create(void);
-void tape_destroy(Tape* t);
+Tape *tape_create(void);
+void tape_destroy(Tape *t);
 
 /* Singleton accessor */
-Tape* tape_get_instance(void);
+Tape *tape_get_instance(void);
 void tape_destroy_instance(void);
 
 /* Memory allocation */
-void* tape_allocate(Tape* t, size_t size);
+void *tape_allocate(Tape *t, size_t size);
 
 /* Node management */
-void tape_register_node(Tape* t, struct ValueData* node);
+void tape_register_node(Tape *t, struct ValueData *node);
 
 /* Statistics */
-size_t tape_num_nodes(const Tape* t);
-size_t tape_num_blocks(const Tape* t);
-size_t tape_mem_used(const Tape* t);
-void tape_print_stats(const Tape* t);
+size_t tape_num_nodes(const Tape *t);
+size_t tape_num_blocks(const Tape *t);
+size_t tape_mem_used(const Tape *t);
+void tape_print_stats(const Tape *t);
+
+/* GraphViz */
+void tape_graphviz(Tape *t, const char *filename);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //CGRAD_TAPE_H
+#endif // CGRAD_TAPE_H
