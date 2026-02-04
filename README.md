@@ -104,7 +104,7 @@ ValueData
 ## Project Structure
 
 ```
-minigrad++/
+cgrad/
 ├── cgrad/
 │   ├── cgrad.h     # Main public header
 │   ├── tape.h      # Arena allocator interface
