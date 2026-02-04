@@ -48,6 +48,10 @@ void *tape_allocate(Tape *t, size_t size);
 /* Node management */
 void tape_register_node(Tape *t, struct ValueData *node);
 
+/* Backward pass */
+void tape_backward(Tape *t);
+void tape_zero_grad(Tape *t);
+
 /* Statistics */
 size_t tape_num_nodes(const Tape *t);
 size_t tape_num_blocks(const Tape *t);

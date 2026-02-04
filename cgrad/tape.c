@@ -112,6 +112,26 @@ void tape_register_node(Tape *t, ValueData *node) {
     t->nodes[t->num_nodes++] = node;
 }
 
+void tape_backward(Tape *t) {
+    if (!t) return;
+
+    /* Iterate over nodes in backward order */
+    for (size_t i = t->num_nodes; i > 0; i--) {
+      ValueData* v = t->nodes[i-1];
+      if (v->backward_fn) v->backward_fn(v);
+    }
+}
+
+void tape_zero_grad(Tape *t) {
+    if (!t) return;
+
+    /* Iterate over nodes and set grad = 0.0 */
+    for (size_t i = 0; i < t->num_nodes; i++) {
+        ValueData* v = t->nodes[i];
+        v->grad = 0.0;
+    }
+}
+
 size_t tape_num_nodes(const Tape *t) {
     return t ? t->num_nodes : 0;
 }

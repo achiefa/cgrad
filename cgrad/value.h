@@ -10,6 +10,10 @@ extern "C" {
 /* Scalar type - fixed to float32 */
 typedef float scalar_t;
 
+/* Forward declarations */
+struct ValueData;
+struct Tape;
+
 /* Backward function pointer type */
 typedef void (*BackwardFn)(struct ValueData *output);
 
@@ -29,7 +33,7 @@ typedef struct ValueData {
 
     // Children nodes
     struct ValueData *children[2];
-    size_t num_children; // TODO check if needed
+    size_t num_children;
 } ValueData;
 
 /* Value creation */
@@ -37,13 +41,13 @@ ValueData *value_create(scalar_t data, const char *name, int required_grad);
 ValueData *value_create_with_tape(struct Tape *t, scalar_t data, const char *name,
                                   int required_grad);
 
-/* Value creation */
+/* Value accessors */
 scalar_t value_get_data(const ValueData *v);
 scalar_t value_get_grad(const ValueData *v);
 const char *value_get_name(const ValueData *v);
 int value_requires_grad(const ValueData *v);
 
-/* Setters */
+/* Value setters */
 void value_set_data(ValueData *v, scalar_t data);
 void value_set_grad(ValueData *v, scalar_t grad);
 void value_set_name(ValueData *v, const char *name);
@@ -51,6 +55,9 @@ void value_set_name(ValueData *v, const char *name);
 /* Binary operations */
 ValueData *value_add(ValueData *a, ValueData *b);
 ValueData *value_mul(ValueData *a, ValueData *b);
+
+/* Backward pass */
+void value_backward(ValueData *v);
 
 #ifdef __cplusplus
 }

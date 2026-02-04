@@ -55,7 +55,8 @@ ValueData *value_create(scalar_t data, const char *name, int requires_grad) {
     return value_create_internal(t, data, name, requires_grad, "", NULL, NULL);
 }
 
-ValueData *value_create_with_tape(Tape *t, scalar_t data, const char *name, int requires_grad) {
+ValueData *value_create_with_tape(struct Tape *t, scalar_t data, const char *name,
+                                  int requires_grad) {
     return value_create_internal(t, data, name, requires_grad, "", NULL, NULL);
 }
 
@@ -144,4 +145,16 @@ ValueData *value_mul(ValueData *a, ValueData *b) {
     }
 
     return out;
+}
+
+/* Backward pass */
+void value_backward(ValueData *v) {
+    if (!v) return;
+
+    /* Set gradient of output to 1.0 */
+    v->grad = 1.0;
+
+    /* Run backward pass on tape */
+    Tape* t = tape_get_instance();
+    tape_backward(t);
 }

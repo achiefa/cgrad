@@ -27,6 +27,15 @@ int main(void) {
   ValueData* L = value_mul(d, f);
   value_set_name(L, "L");
 
+  value_backward(L);
+
+  printf("L = %f\n", value_get_data(L));
+  printf("Gradients:\n");
+  printf("  dL/da = %f (expected: %f)\n", value_get_grad(a), -2.0 * (-3.0));
+  printf("  dL/db = %f (expected: %f)\n", value_get_grad(b), -2.0 * 2.0);
+  printf("  dL/dc = %f (expected: %f)\n", value_get_grad(c), -2.0);
+  printf("  dL/df = %f (expected: %f)\n", value_get_grad(f), 2.0 * (-3.0) + 10.0);
+
   tape_print_stats(tape);
   tape_graphviz(tape, "simple_graphviz");
   tape_destroy_instance();
