@@ -43,3 +43,7 @@
 # GraphViz
 *.dot
 *.png
+
+# Build artifacts
+examples/simple
+tests/test_runner
