@@ -54,7 +54,15 @@ void value_set_name(ValueData *v, const char *name);
 
 /* Binary operations */
 ValueData *value_add(ValueData *a, ValueData *b);
+ValueData *value_sub(ValueData *a, ValueData *b);
 ValueData *value_mul(ValueData *a, ValueData *b);
+ValueData *value_div(ValueData *a, ValueData *b);
+
+/* Scalar-on-left operations */
+ValueData *scalar_add_value(scalar_t s, ValueData *v);
+ValueData *scalar_sub_value(scalar_t s, ValueData *v);
+ValueData *scalar_mul_value(scalar_t s, ValueData *v);
+ValueData *scalar_div_value(scalar_t s, ValueData *v);
 
 /* Backward pass */
 void value_backward(ValueData *v);

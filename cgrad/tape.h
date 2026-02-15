@@ -27,7 +27,7 @@ typedef struct TapeBlock {
 typedef struct Tape {
     TapeBlock **blocks;     // Array of block pointers
     size_t num_blocks;      // Current count
-    size_t blocks_capacity; // Allocated capacity
+    size_t blocks_capacity; // Allocated capacity in blocks
 
     struct ValueData **nodes; // Array of node pointers
     size_t num_nodes;
@@ -44,6 +44,9 @@ void tape_destroy_instance(void);
 
 /* Memory allocation */
 void *tape_allocate(Tape *t, size_t size);
+
+/* Memory menagement */
+void tape_clear(Tape *t);
 
 /* Node management */
 void tape_register_node(Tape *t, struct ValueData *node);

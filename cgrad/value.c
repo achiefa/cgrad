@@ -105,16 +105,30 @@ static void backward_add(ValueData *out) {
         out->children[1]->grad += out->grad;
 }
 
+static void backward_sub(ValueData *out) {
+    /* d/da (a - b) = 1, d/db (a - b) = -1 */
+    if (out->children[0])
+        out->children[0]->grad += out->grad;
+    if (out->children[1])
+        out->children[1]->grad -= out->grad;
+}
+
 static void backward_mul(ValueData *out) {
     /* d/da (a * b) = b, d/db (a * b) = a */
     if (out->children[0])
         out->children[0]->grad += out->cached_a * out->grad;
     if (out->children[1])
-        out->children[0]->grad += out->cached_b * out->grad;
+        out->children[1]->grad += out->cached_b * out->grad;
 }
 
+static void backward_div(ValueData *out) {
+    /* d/da (a / b) = 1/b, d/db (a / b) = - a / b^2 */
+    if (out->children[0])
+        out->children[0]->grad += out->grad / out->cached_b;
+    if (out->children[1])
+        out->children[1]->grad += - (out->cached_a / (out->cached_b * out->cached_b)) * out->grad;
+}
 /* Binary operations */
-
 ValueData *value_add(ValueData *a, ValueData *b) {
     if (!a || !b)
         return NULL;
@@ -126,6 +140,21 @@ ValueData *value_add(ValueData *a, ValueData *b) {
     if (out_rg && out) {
         out->backward_fn = backward_add;
     }
+    return out;
+}
+
+ValueData *value_sub(ValueData *a, ValueData *b) {
+    if (!a || !b) 
+      return NULL;
+    
+    Tape *t = tape_get_instance();
+    int out_rg = a->requires_grad || b->requires_grad;
+    ValueData *out = value_create_internal(t, a->data - b->data, "", out_rg, "-", a, b);
+    
+    if (out_rg && out) {
+        out->backward_fn = backward_sub;
+    }
+
     return out;
 }
 
@@ -145,6 +174,57 @@ ValueData *value_mul(ValueData *a, ValueData *b) {
     }
 
     return out;
+}
+
+ValueData *value_div(ValueData *a, ValueData *b) {
+    if (!a || !b)
+        return NULL;
+
+    Tape *t = tape_get_instance();
+    int out_rg = a->requires_grad || b->requires_grad;
+    ValueData *out = value_create_internal(t, a->data / b->data, "", out_rg, "/", a, b);
+
+    if (out_rg && out) {
+        out->backward_fn = backward_div;
+        /* Cache values needed for backward pass */
+        out->cached_a = a->data;
+        out->cached_b = b->data;
+    }
+
+    return out;
+}
+
+/* Scalar-on-left operations */
+ValueData *scalar_add_value(scalar_t s, ValueData *v) {
+    if (!v) return NULL;
+    
+    Tape *t = tape_get_instance();
+    ValueData *scalar_v = value_create_internal(t, s, "", 0, "", NULL, NULL);
+    return value_add(scalar_v, v);
+}
+
+ValueData *scalar_sub_value(scalar_t s, ValueData *v) {
+    if (!v) return NULL;
+
+    Tape *t = tape_get_instance();
+    ValueData *scalar_v = value_create_internal(t, s, "", 0, "", NULL, NULL);
+    return value_sub(scalar_v, v);
+}
+
+ValueData *scalar_mul_value(scalar_t s, ValueData *v) {
+    if (!v) return NULL;
+
+    Tape *t = tape_get_instance();
+    ValueData *scalar_v = value_create_internal(t, s, "", 0, "", NULL, NULL);
+    return value_sub(scalar_v, v);
+}
+
+ValueData *scalar_div_value(scalar_t s, ValueData *v) {
+    if (!v) return NULL;
+
+    Tape *t = tape_get_instance();
+    ValueData *scalar_v = value_create_internal(t, s, "", 0, "", NULL, NULL);
+    return value_div(scalar_v, v);
 }
 
 /* Backward pass */

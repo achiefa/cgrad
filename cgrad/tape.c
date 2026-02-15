@@ -95,6 +95,16 @@ void *tape_allocate(Tape *t, size_t size) {
     return ptr;
 }
 
+void tape_clear(Tape *t) {
+    if (!t) return;
+
+    for (size_t i = 0; i < t->num_blocks; i++) {
+        free(t->blocks[i]);
+    }
+    t->num_blocks = 0;
+    t->num_nodes = 0;
+}
+
 void tape_register_node(Tape *t, ValueData *node) {
     if (!t || !node)
         return;
@@ -194,6 +204,18 @@ void tape_graphviz(Tape *t, const char *filename) {
             /* Connect value node to op node */
             fprintf(file, "  node_op_%p -> node_%p;\n", (void *)v, (void *)v);
         }
+    }
+    
+    // Collect all edges
+    for (size_t i = 0; i < t->num_nodes; i++) {
+        struct ValueData *v = t->nodes[i];
+        if (v->num_children >= 0) {
+            for (size_t j = 0; j < v->num_children; j++) {
+                ValueData *ch = v->children[j];
+                fprintf(file, "  node_%p -> node_op_%p;\n", (void *)ch, (void *)v);
+            }
+        }
+          
     }
 
     fprintf(file, "}\n");
